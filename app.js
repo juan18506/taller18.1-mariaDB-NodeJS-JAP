@@ -15,7 +15,7 @@ const port = 3000;
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.send('<h1>Bienvenid@ al servidor</h1>');
+  res.send('<h1>Bienvenido al servidor</h1>');
 });
 
 app.get('/people', async (req, res) => {
@@ -56,13 +56,12 @@ app.post('/people', async (req, res) => {
   try {
     conn = await pool.getConnection();
     const response = await conn.query(
-      `INSERT INTO people(name, lastname, email) VALUE(?, ?, ?)`,
+      'INSERT INTO people(name, lastname, email) VALUES(?, ?, ?)',
       [req.body.name, req.body.lastname, req.body.email]
     );
 
-    res.json({ id: parseInt(response.insertId), ...req.body });
+    res.json({ id: Number(response.insertId), ...req.body });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: 'Se rompió el servidor' });
   } finally {
     if (conn) conn.release(); //release to pool
@@ -80,7 +79,6 @@ app.put('/people/:id', async (req, res) => {
 
     res.json({ id: req.params.id, ...req.body });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: 'Se rompió el servidor' });
   } finally {
     if (conn) conn.release(); //release to pool
